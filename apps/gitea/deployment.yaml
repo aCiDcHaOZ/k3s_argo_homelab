@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gitea
+  template:
+    metadata:
+      labels:
+        app: gitea
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: gitea
+          image: gitea/gitea:1.26.1-rootless
+          ports:
+            - name: http
+              containerPort: 3000
+            - name: ssh
+              containerPort: 2222
+          env:
+            - name: GITEA__server__DOMAIN
+              value: git.onlionel.com
+            - name: GITEA__server__ROOT_URL
+              value: https://git.onlionel.com/
+            - name: GITEA__server__SSH_DOMAIN
+              value: git.onlionel.com
+            - name: GITEA__server__SSH_PORT
+              value: "2222"
+            - name: GITEA__server__START_SSH_SERVER
+              value: "true"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/gitea
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gitea-data
