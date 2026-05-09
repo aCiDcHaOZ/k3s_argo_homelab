@@ -84,9 +84,12 @@ metadata:
   name: zabbix-server
   namespace: zabbix
 spec:
+  type: NodePort
   selector:
     app: zabbix-server
   ports:
-    - name: zabbix
+    - name: zabbix-server
       port: 10051
       targetPort: 10051
+      nodePort: 30051
+      protocol: TCP
