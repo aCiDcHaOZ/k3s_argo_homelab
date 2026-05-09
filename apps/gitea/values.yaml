@@ -1,0 +1,51 @@
+gitea:
+  admin:
+    username: admin
+    password: changeme
+    email: admin@onlionel.com
+
+  config:
+    server:
+      ROOT_URL: https://gitea.onlionel.com
+      DOMAIN: gitea.onlionel.com
+      SSH_DOMAIN: gitea.onlionel.com
+      PROTOCOL: http
+      HTTP_PORT: 3000
+    service:
+      DISABLE_REGISTRATION: true
+
+replicaCount: 1
+
+persistence:
+  enabled: true
+  storageClass: longhorn-2rep
+  size: 10Gi
+
+postgresql:
+  enabled: true
+  primary:
+    persistence:
+      enabled: true
+      storageClass: longhorn-2rep
+      size: 8Gi
+
+service:
+  http:
+    type: ClusterIP
+    port: 3000
+  ssh:
+    type: ClusterIP
+    port: 22
+
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: gitea.onlionel.com
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
