@@ -23,7 +23,9 @@ spec:
             enabled: true
             ingressClassName: traefik
             hosts:
-              - grafana.example.local
+              - grafana.onlionel.com
+            path: /
+            pathType: Prefix
 
         prometheus:
           prometheusSpec:
