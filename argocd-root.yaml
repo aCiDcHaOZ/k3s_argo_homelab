@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://git.onlionel.com/lionel/k3s_gitops.git
+    repoURL: https://https://github.com/aCiDcHaOZ/k3s_argo_homelab.git
     targetRevision: main
     path: argocd-apps
   destination:
