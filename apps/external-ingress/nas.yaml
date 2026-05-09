@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nas
+  namespace: rev-proxy
+spec:
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: nas
+  namespace: rev-proxy
+subsets:
+  - addresses:
+      - ip: 10.0.2.2
+    ports:
+      - name: https
+        port: 443
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nas
+  namespace: rev-proxy
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: nas.onlionel.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nas
+                port:
+                  number: 443
+  tls:
+    - hosts:
+        - nas.onlionel.com

@@ -1,0 +1,37 @@
+vaultwarden:
+  replicas: 1
+
+  resourceType: StatefulSet
+
+  image:
+    repository: vaultwarden/server
+    tag: "1.35.7-alpine"
+    pullPolicy: IfNotPresent
+
+  domain: "https://vaultwarden.onlionel.com"
+
+  ipHeader: "X-Forwarded-For"
+
+  storage:
+    existingVolumeClaim:
+      claimName: vaultwarden-data-longhorn
+      dataPath: /data
+
+  service:
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    class: "traefik"
+    hostname: "vaultwarden.onlionel.com"
+    tls: true
+    # Geen tlsSecret gebruiken bij Traefik ACME.
+    # tlsSecret: "vaultwarden-tls"
+
+    additionalAnnotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: le
+
+  # adminToken:
+  #   value: "<argon2-hash-of-token>"

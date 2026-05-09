@@ -1,0 +1,74 @@
+nextcloud:
+  replicaCount: 1
+
+  nextcloud:
+    host: nextcloud.onlionel.com
+    username: admin
+    existingSecret:
+      enabled: true
+      secretName: nextcloud
+      usernameKey: nextcloud-username
+      passwordKey: nextcloud-password
+
+  persistence:
+    enabled: true
+    storageClass: longhorn-2rep
+    size: 50Gi
+    accessMode: ReadWriteOnce
+
+  internalDatabase:
+    enabled: false
+
+  externalDatabase:
+    enabled: true
+    type: mysql
+    host: nextcloud-mariadb
+    database: nextcloud
+    existingSecret:
+      enabled: true
+      secretName: nextcloud-db
+      usernameKey: db-username
+      passwordKey: db-password
+
+  mariadb:
+    enabled: true
+    architecture: standalone
+    auth:
+      database: nextcloud
+      username: nextcloud
+      existingSecret: nextcloud-mariadb
+    primary:
+      persistence:
+        enabled: true
+        storageClass: longhorn-2rep
+        size: 10Gi
+
+  redis:
+    enabled: true
+    architecture: standalone
+    auth:
+      enabled: true
+      existingSecret: nextcloud-redis
+      existingSecretPasswordKey: redis-password
+    master:
+      persistence:
+        enabled: true
+        storageClass: longhorn-2rep
+        size: 2Gi
+
+  ingress:
+    enabled: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.tls.certresolver: le
+      traefik.ingress.kubernetes.io/router.middlewares: nextcloud-nextcloud-headers@kubernetescrd
+    hosts:
+      - host: nextcloud.onlionel.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - nextcloud.onlionel.com

@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost
+  namespace: {{ .Values.namespace }}
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: ghost
+
+  template:
+    metadata:
+      labels:
+        app: ghost
+
+    spec:
+      containers:
+        - name: ghost
+          image: {{ .Values.ghost.image }}
+
+          ports:
+            - containerPort: 2368
+
+          env:
+            - name: url
+              value: {{ .Values.domain | quote }}
+
+            - name: database__client
+              value: mysql
+
+            - name: database__connection__host
+              value: ghost-db
+
+            - name: database__connection__user
+              value: ghost
+
+            - name: database__connection__password
+              valueFrom:
+                secretKeyRef:
+                  name: ghost-secrets
+                  key: mariadb-password
+
+            - name: database__connection__database
+              value: ghost
+
+            - name: database__connection__charset
+              value: utf8mb4
+
+            - name: mail__transport
+              value: SMTP
+
+            - name: mail__from
+              value: {{ .Values.smtp.from | quote }}
+
+            - name: mail__options__host
+              value: {{ .Values.smtp.host | quote }}
+
+            - name: mail__options__port
+              value: {{ .Values.smtp.port | quote }}
+
+            - name: mail__options__secure
+              value: "false"
+
+            - name: mail__options__auth__user
+              value: {{ .Values.smtp.user | quote }}
+
+            - name: mail__options__auth__pass
+              valueFrom:
+                secretKeyRef:
+                  name: ghost-secrets
+                  key: smtp-password
+
+          volumeMounts:
+            - name: ghost-content
+              mountPath: /var/lib/ghost/content
+
+      volumes:
+        - name: ghost-content
+          persistentVolumeClaim:
+            claimName: ghost-content

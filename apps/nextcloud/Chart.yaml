@@ -1,0 +1,9 @@
+# apps/nextcloud/Chart.yaml
+apiVersion: v2
+name: nextcloud-wrapper
+version: 0.1.0
+
+dependencies:
+  - name: nextcloud
+    version: "*"
+    repository: https://nextcloud.github.io/helm/

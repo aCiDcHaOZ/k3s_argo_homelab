@@ -1,0 +1,8 @@
+apiVersion: v2
+name: vaultwarden-wrapper
+version: 0.1.0
+
+dependencies:
+  - name: vaultwarden
+    version: "*"
+    repository: https://guerzon.github.io/vaultwarden

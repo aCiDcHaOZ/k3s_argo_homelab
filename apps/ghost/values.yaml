@@ -1,0 +1,40 @@
+namespace: ghost
+
+domain: https://onlionel.com
+
+ghost:
+  image: ghost:5-alpine
+  storageClass: longhorn-2rep
+  storage: 10Gi
+
+mariadb:
+  image: mariadb:11
+  storageClass: longhorn-2rep
+  storage: 10Gi
+
+secrets:
+  mariadbPassword: CHANGE_ME
+  mariadbRootPassword: CHANGE_ME
+  smtpPassword: CHANGE_ME
+
+smtp:
+  from: mail@onlionel.com
+  host: smtp.strato.com
+  port: 587
+  user: mail@onlionel.com
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: le
+
+  hosts:
+    - host: onlionel.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+  tls: []
