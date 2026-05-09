@@ -6,14 +6,17 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://github.com/<user>/<repo>.git
-    targetRevision: main
-    chart: gitea
-    repoURL: https://dl.gitea.com/charts/
-    helm:
-      valueFiles:
-        - values.yaml
+  sources:
+    - repoURL: https://dl.gitea.com/charts/
+      chart: gitea
+      targetRevision: 10.6.0
+      helm:
+        valueFiles:
+          - $values/apps/gitea/values.yaml
+
+    - repoURL: https://github.com/<user>/<repo>.git
+      targetRevision: main
+      ref: values
 
   destination:
     server: https://kubernetes.default.svc
